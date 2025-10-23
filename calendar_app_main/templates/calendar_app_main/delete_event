@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"> <!-- 日本語文字化け防止 -->
+<title>予定の削除確認</title> <!-- ブラウザのタブに表示されるタイトル -->
+<style>
+    /* 全体の基本デザイン設定 */
+    body { 
+        font-family: "Segoe UI", Meiryo, sans-serif; /* 読みやすいフォント */
+        background: #f8f8ff; /* 薄い背景色 */
+        text-align: center; /* 中央寄せ */
+        margin-top: 100px; /* 上に少し余白 */
+    }
+
+    /* 中央のカード部分 */
+    .confirm-card {
+        background: #fff; /* 白い背景 */
+        width: 400px; /* 幅 */
+        margin: 0 auto; /* 中央配置 */
+        padding: 30px; /* 余白 */
+        border-radius: 12px; /* 角丸 */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 影をつけて浮かせる */
+    }
+
+    /* ボタンデザイン */
+    button {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin: 10px;
+        font-weight: bold;
+    }
+    /* 削除ボタン（赤色） */
+    .delete-btn {
+        background: #d9534f;
+        color: white;
+    }
+    /* キャンセルリンク（青色） */
+    .cancel-link {
+        color: #0078d7;
+        text-decoration: none;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+    <div class="confirm-card">
+        <!-- 削除するイベント名を表示 -->
+        <h2>「{{ event.title }}」を削除しますか？</h2>
+
+        <!-- 日付・時間などの概要も表示 -->
+        <p>{{ event.start_date }} ～ {{ event.end_date }}</p>
+
+        <!-- フォーム送信で削除を実行 -->
+        <form method="post">
+            {% csrf_token %} <!-- セキュリティ対策のトークン -->
+            <button type="submit" class="delete-btn">削除する</button>
+        </form>
+
+        <!-- キャンセルして詳細ページへ戻る -->
+        <a href="{% url 'calendar_app_main:event_detail' event.id %}" class="cancel-link">キャンセル</a>
+    </div>
+</body>
+</html>
