@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>予定の編集</title> <!-- ブラウザタブに表示されるタイトル -->
+
+<style>
+    /* ページ全体の基本スタイル設定 */
+    body {
+        font-family: "Segoe UI", Meiryo, sans-serif; /* 英日混在でも見やすいフォント */
+        background: #f8f8ff;                        /* 背景を淡いグレーに設定 */
+        text-align: center;                         /* 見出しなど中央揃え */
+    }
+
+    /* 編集フォーム全体を囲むカード風デザイン */
+    .form-card {
+        background: #fff;                           /* 背景は白 */
+        width: 420px;                               /* フォームの幅 */
+        margin: 40px auto;                          /* 上下の余白と中央寄せ */
+        padding: 30px;                              /* 内側の余白 */
+        border-radius: 16px;                        /* 角を丸くする */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);     /* 薄い影で立体感を出す */
+        text-align: left;                           /* 入力欄を左揃えに */
+    }
+
+    /* 各入力フォームのラベル（項目名）のデザイン */
+    label {
+        display: block;                             /* 改行して表示 */
+        margin-top: 10px;                           /* 上に余白を追加 */
+        font-weight: bold;                          /* 太字 */
+        color: #555;                                /* 少し淡いグレーで読みやすく */
+    }
+
+    /* テキスト、日付、時間、カラー入力欄などの共通デザイン */
+    input[type="text"],
+    textarea,
+    input[type="date"],
+    input[type="time"],
+    input[type="color"] {
+        width: 100%;                                /* 横幅いっぱいに広げる */
+        padding: 8px;                               /* 内側の余白 */
+        margin-top: 5px;                            /* ラベルとの間に余白 */
+        border: 1px solid #ccc;                     /* 枠線を薄い灰色に */
+        border-radius: 6px;                         /* 角を少し丸く */
+    }
+
+    /* 「保存」ボタンのスタイル */
+    button {
+        background: #0078d7;                        /* Microsoft風の青 */
+        color: white;                               /* 白文字 */
+        padding: 10px 20px;                         /* ボタン内の余白 */
+        border: none;                               /* 枠線なし */
+        border-radius: 8px;                         /* 丸みをつける */
+        margin-top: 15px;                           /* 上に余白 */
+        cursor: pointer;                            /* ホバー時にポインタ表示 */
+        font-weight: bold;                          /* 太字 */
+    }
+
+    /* 「詳細に戻る」リンクのスタイル */
+    .back-link {
+        display: inline-block;                      /* 行内ブロック表示 */
+        margin-top: 15px;                           /* 上に余白 */
+        color: #0078d7;                             /* 青色の文字 */
+        text-decoration: none;                      /* 下線を消す */
+    }
+</style>
+</head>
+
+<body>
+    <!-- ページタイトル -->
+    <h1>予定の編集</h1>
+
+    <!-- 編集フォームのメインカード -->
+    <div class="form-card">
+        <!-- イベント編集フォーム -->
+        <form method="post">
+            {% csrf_token %}        <!-- CSRFトークン（セキュリティ対策） -->
+            {{ form.as_p }}          <!-- Djangoフォームを<p>タグで自動整形 -->
+            <button type="submit">保存</button> <!-- 編集内容を保存するボタン -->
+        </form>
+
+        <!-- イベント詳細ページへの戻りリンク -->
+        <a href="{% url 'calendar_app_main:event_detail' event.id %}" class="back-link">
+            ← 詳細に戻る
+        </a>
+    </div>
+</body>
+</html>
