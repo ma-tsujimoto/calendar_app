@@ -1,0 +1,137 @@
+{% load dict_extras %}  
+<!-- 自作テンプレートタグ（dict_extras.py）を読み込む
+     → 辞書(event_dict)からキー（day.day）で値を取り出すためのフィルタを使うため -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <title>{{ year }}年{{ month }}月のカレンダー</title> <!-- ページタイトルに年と月を表示 -->
+
+    <style>
+        /* 全体のデザイン設定 */
+        body {
+            font-family: "Segoe UI", sans-serif;  /* フォントを指定 */
+            background-color: #f8f8ff;            /* 背景色を淡いグレーに設定 */
+            color: #333;                           /* 文字色を濃いグレーに設定 */
+            text-align: center;                    /* 全体を中央寄せにする */
+        }
+
+        /* カレンダー表のデザイン */
+        table {
+            border-collapse: collapse;             /* 枠線の重なりをなくす */
+            margin: 20px auto;                     /* テーブルを中央に配置 */
+            background-color: white;               /* 背景を白に設定 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);  /* 薄い影をつけて立体感を出す */
+        }
+
+        /* 各セル（th, td）の共通デザイン */
+        th, td {
+            border: 1px solid #ccc;                /* 灰色の枠線を付ける */
+            padding: 8px;                          /* 内側の余白 */
+            width: 50px; height: 60px;             /* 各マスの大きさを指定 */
+            text-align: center;                    /* 中央揃え */
+            vertical-align: top;                   /* 上寄せにする */
+        }
+
+        th { background-color: #f0f0f0; }          /* 曜日ヘッダー部分の背景色 */
+
+        /* 今日の日付の強調表示 */
+        .today {
+            background-color: #fff176;             /* 黄色で強調 */
+            font-weight: bold;                     /* 太字にする */
+            border-radius: 6px;                    /* 角を少し丸くする */
+        }
+
+        /* リンクのデザイン（予定追加リンクなど） */
+        a {
+            text-decoration: none;                 /* 下線を消す */
+            color: #0078d7;                        /* 青色の文字 */
+            font-weight: bold;                     /* 太字にする */
+        }
+
+        /* 予定タイトル部分の見た目 */
+        .event-title {
+            font-size: 12px;                       /* 文字を小さめにする */
+            color: #0078d7;                        /* 文字色を青にする */
+            margin-top: 3px;                       /* 上に少し余白 */
+            white-space: nowrap;                   /* 折り返しを防ぐ */
+            overflow: hidden;                      /* はみ出た部分を非表示 */
+            text-overflow: ellipsis;               /* はみ出た部分を「…」で省略 */
+            max-width: 80px;                       /* 最大幅を指定 */
+            display: block;                        /* ブロック要素に変更 */
+        }
+
+        /* イベントをバーで表示するためのクラス（未完成実装用） */
+        .event-bar {
+            position: relative;                    /* 相対配置（幅計算に使う） */
+            border-radius: 4px;                    /* 角を丸くする */
+            height: 18px;                          /* 高さを指定 */
+            margin-top: 4px;                       /* 上に少し余白 */
+            overflow: hidden;                      /* 内容のはみ出し防止 */
+            line-height: 18px;                     /* テキストを中央に配置 */
+            font-size: 12px;                       /* 小さめ文字 */
+        }
+
+        /* バー内の文字（イベント名など） */
+        .event-label {
+            color: white;                          /* 白文字 */
+            display: block;                        /* ブロック要素にする */
+            text-decoration: none;                 /* 下線を消す */
+            padding: 0 6px;                        /* 左右に余白 */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{ year }}年{{ month }}月のカレンダー</h1> <!-- 見出しに年・月を表示 -->
+
+    <!-- 前月・次月へのリンク -->
+    <div>
+        <a href="{% url 'calendar_app_main:calendar_by_month' year=prev_year month=prev_month %}">＜ 前の月</a> |
+        <a href="{% url 'calendar_app_main:calendar_by_month' year=next_year month=next_month %}">次の月 ＞</a>
+    </div>
+
+    <!-- カレンダー本体 -->
+    <table>
+        <thead>
+            <tr>
+                {% for day in week_days %} <!-- 曜日見出しを1週間分繰り返し表示 -->
+                    <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for week in weeks %} <!-- 各週ごとの処理 -->
+                <tr>
+                    {% for day in week %} <!-- 各日のセルを生成 -->
+                        {% if day.day %} <!-- 0以外（実在する日）なら -->
+                            {% if day.day == today %}
+                                <td class="today" style="color:{{ day.color }}"> <!-- 今日なら強調表示 -->
+                            {% else %}
+                                <td style="color:{{ day.color }}"> <!-- 通常のセル -->
+                            {% endif %}
+                                    <!-- 日付クリックで予定追加ページへ遷移 -->
+                                    <a href="{% url 'calendar_app_main:add_event' year=year month=month day=day.day %}" style="color:{{ day.color }}">
+                                        {{ day.day }}
+                                    </a>
+
+                                   {% for event in event_dict|get_item:day.day %} <!-- その日に登録されたイベントをすべて表示 -->
+                                        <div class="event-title">
+                                            • <a href="{% url 'calendar_app_main:event_detail' event.id %}" style="color:#0078d7;">
+                                                {{ event.title }} <!-- イベントタイトルを表示 -->
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                </td>
+                        {% else %}
+                            <td></td> <!-- 空欄（前月・次月の余白） -->
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+  </html>
