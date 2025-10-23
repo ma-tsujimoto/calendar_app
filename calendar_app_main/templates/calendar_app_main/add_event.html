@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <title>予定を追加</title> <!-- ブラウザタブに表示されるタイトル -->
+
+    <style>
+        /* 全体の基本スタイル設定 */
+        body {
+            font-family: "Segoe UI", sans-serif;  /* シンプルで見やすいフォントを使用 */
+            background-color: #f8f8ff;            /* 背景を薄いグレーに設定 */
+            text-align: center;                   /* 全体の中央揃え */
+        }
+
+        /* 入力フォーム全体を囲むボックス */
+        .form-container {
+            background: #fff;                     /* 背景を白に */
+            width: 400px;                         /* フォームの横幅 */
+            margin: 80px auto;                    /* 上下に余白、中央寄せ */
+            padding: 30px;                        /* 内側の余白 */
+            border-radius: 12px;                  /* 角を丸くする */
+            box-shadow: 0 0 12px rgba(0,0,0,0.1); /* 薄い影で浮かせる効果 */
+            text-align: left;                     /* 入力欄は左揃え */
+        }
+
+        /* ラベル（項目名）のスタイル */
+        label {
+            display: block;                       /* ラベルをブロック表示（改行） */
+            margin-top: 10px;                     /* 上に余白 */
+            font-weight: bold;                    /* 太字 */
+            color: #555;                          /* 少し淡いグレー */
+        }
+
+        /* 入力欄（テキスト、日付、時間、カラー、テキストエリア）共通デザイン */
+        input[type="text"],
+        textarea,
+        input[type="date"],
+        input[type="time"],
+        input[type="color"] {
+            width: 100%;                          /* 横幅いっぱいに広げる */
+            padding: 8px;                         /* 内側の余白 */
+            margin-top: 5px;                      /* 上に余白 */
+            border: 1px solid #ccc;               /* 灰色の枠線 */
+            border-radius: 6px;                   /* 角を少し丸く */
+        }
+
+        /* 「登録する」ボタンのデザイン */
+        button {
+            background: #0078d7;                  /* 青色背景 */
+            color: #fff;                          /* 白文字 */
+            border: none;                         /* 枠線なし */
+            padding: 10px 20px;                   /* ボタン内の余白 */
+            border-radius: 8px;                   /* 角を丸くする */
+            margin-top: 15px;                     /* 上に余白 */
+            cursor: pointer;                      /* ホバー時にポインタ表示 */
+            font-weight: bold;                    /* 太字 */
+        }
+
+        /* 「カレンダーに戻る」リンクのスタイル */
+        .back-link {
+            display: inline-block;                /* ブロックではなくインライン要素 */
+            margin-top: 15px;                     /* 上に余白 */
+            color: #0078d7;                       /* 青色文字 */
+            text-decoration: none;                /* 下線を消す */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 入力フォーム全体を囲むブロック -->
+    <div class="form-container">
+        <h1>予定を追加</h1> <!-- ページ見出し -->
+        <div class="date-info">
+            {{ year }}年{{ month }}月{{ day }}日 <!-- 現在追加対象の日付を表示 -->
+        </div>
+
+        <!-- Djangoのフォーム送信部分 -->
+        <form method="POST">
+            {% csrf_token %}          <!-- CSRF対策用トークン（必須） -->
+            {{ form.as_p }}            <!-- Djangoフォームを<p>タグ付きで自動生成 -->
+            <button type="submit">登録する</button> <!-- 登録ボタン -->
+        </form>
+
+        <!-- カレンダー画面へ戻るリンク -->
+        <a class="back-link"
+           href="{% url 'calendar_app_main:calendar_by_month' year=year month=month %}">
+           ← カレンダーに戻る
+        </a>
+    </div>
+</body>
+</html>
